@@ -1,0 +1,65 @@
+---
+title: "employeesurveydata"
+author: "Alfazkhan"
+date: "2024-09-22"
+output: html_document
+---
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(readxl)
+
+file_path <- 'C:/Users/Alfaz Khan/OneDrive/Desktop/RUTGERS/Business Forecasting/Week 2/Typical_Employee_Survey_Data.xlsx'
+data <- read_excel(file_path)
+
+colnames(data) <- c('Age', 'Gender', 'Job Satisfaction', 'Important Job Characteristic', 
+                    'Years Worked', 'Promotion Likelihood', 'Decision Making Involvement', 
+                    'Budgetary Participation', 'Proud to Work', 'Turn Down Other Job', 
+                    'Coworker Relations')
+
+data <- type.convert(data, as.is = TRUE)
+
+numerical_columns <- sapply(data, is.numeric)
+summary(data[, numerical_columns])
+
+for (col in names(data)[numerical_columns]) {
+  boxplot(data[[col]], main = paste('Boxplot of', col), ylab = col)
+}
+
+factor_columns <- c('Gender', 'Job Satisfaction', 'Important Job Characteristic', 
+                    'Promotion Likelihood', 'Decision Making Involvement', 
+                    'Budgetary Participation', 'Proud to Work', 'Turn Down Other Job', 
+                    'Coworker Relations')
+
+data[factor_columns] <- lapply(data[factor_columns], factor)
+
+# Visualizations
+# Histograms for numerical columns
+for (col in names(data)) {
+  if (is.numeric(data[[col]])) {
+    plot <- ggplot(data, aes(x = .data[[col]])) +
+      geom_histogram(binwidth = 10, fill = 'blue', color = 'black') +
+      labs(title = paste('Histogram of', col), x = col) +
+      theme_minimal()
+    print(plot)  # Print the plot
+  } else if (is.factor(data[[col]])) {
+    plot <- ggplot(data, aes(x = .data[[col]])) +
+      geom_bar(fill = 'green', color = 'black') +
+      labs(title = paste('Bar Plot of', col), x = col) +
+      theme_minimal()
+    print(plot)  # Print the plot
+  }
+}
+
+# Scatter plot between Age and Years Worked
+plot <- ggplot(data, aes(x = Age, y = `Years Worked`)) +
+  geom_point() +
+  labs(title = 'Scatter Plot between Age and Years Worked', 
+       x = 'Age', y = 'Years Worked') +
+  theme_minimal()
+print(plot)
+
+```
+
