@@ -1,33 +1,40 @@
 ---
-title: "employeesurveydata"
-author: "Alfazkhan"
+title: "Employee Survey Data Analysis"
+author: "Alfaz Khan"
 date: "2024-09-22"
 output: html_document
 ---
 
 ```{r}
-# Load necessary libraries
+
 library(ggplot2)
 library(dplyr)
 library(readxl)
 
+# Load the dataset from the specified file path
 file_path <- 'C:/Users/Alfaz Khan/OneDrive/Desktop/RUTGERS/Business Forecasting/Week 2/Typical_Employee_Survey_Data.xlsx'
 data <- read_excel(file_path)
 
+# Set appropriate column names based on the survey structure
 colnames(data) <- c('Age', 'Gender', 'Job Satisfaction', 'Important Job Characteristic', 
                     'Years Worked', 'Promotion Likelihood', 'Decision Making Involvement', 
                     'Budgetary Participation', 'Proud to Work', 'Turn Down Other Job', 
                     'Coworker Relations')
 
+# Convert columns to appropriate types (e.g., numeric or factor)
 data <- type.convert(data, as.is = TRUE)
 
+# Select only numerical columns for summary
 numerical_columns <- sapply(data, is.numeric)
+
+# Generate summary statistics for numerical columns
 summary(data[, numerical_columns])
 
-for (col in names(data)[numerical_columns]) {
-  boxplot(data[[col]], main = paste('Boxplot of', col), ylab = col)
-}
+# Create boxplots for Age and Years Worked
+boxplot(data$Age, main = "Boxplot of Age", ylab = "Age", col = "lightblue")
+boxplot(data$`Years Worked`, main = "Boxplot of Years Worked", ylab = "Years Worked", col = "lightblue")
 
+# Convert specified columns to factors for proper visualization
 factor_columns <- c('Gender', 'Job Satisfaction', 'Important Job Characteristic', 
                     'Promotion Likelihood', 'Decision Making Involvement', 
                     'Budgetary Participation', 'Proud to Work', 'Turn Down Other Job', 
@@ -35,31 +42,29 @@ factor_columns <- c('Gender', 'Job Satisfaction', 'Important Job Characteristic'
 
 data[factor_columns] <- lapply(data[factor_columns], factor)
 
-# Visualizations
-# Histograms for numerical columns
+# Visualize numerical columns with histograms and factor columns with bar plots
 for (col in names(data)) {
   if (is.numeric(data[[col]])) {
-    plot <- ggplot(data, aes(x = .data[[col]])) +
+    # Histogram for numeric columns
+    ggplot(data, aes(x = .data[[col]])) +
       geom_histogram(binwidth = 10, fill = 'blue', color = 'black') +
       labs(title = paste('Histogram of', col), x = col) +
-      theme_minimal()
-    print(plot)  # Print the plot
+      theme_minimal() -> plot
+    print(plot)
   } else if (is.factor(data[[col]])) {
-    plot <- ggplot(data, aes(x = .data[[col]])) +
+    # Bar plot for factor columns
+    ggplot(data, aes(x = .data[[col]])) +
       geom_bar(fill = 'green', color = 'black') +
       labs(title = paste('Bar Plot of', col), x = col) +
-      theme_minimal()
-    print(plot)  # Print the plot
+      theme_minimal() -> plot
+    print(plot)
   }
 }
 
-# Scatter plot between Age and Years Worked
-plot <- ggplot(data, aes(x = Age, y = `Years Worked`)) +
-  geom_point() +
-  labs(title = 'Scatter Plot between Age and Years Worked', 
+# Create a scatter plot between Age and Years Worked
+ggplot(data, aes(x = Age, y = `Years Worked`)) +
+  geom_point(color = "blue", size = 3) +
+  labs(title = 'Scatter Plot: Age vs. Years Worked', 
        x = 'Age', y = 'Years Worked') +
-  theme_minimal()
+  theme_minimal() -> plot
 print(plot)
-
-```
-
